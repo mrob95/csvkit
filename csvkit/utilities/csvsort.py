@@ -13,6 +13,8 @@ class CSVSort(CSVKitUtility):
                                     help='Display column names and indices from the input CSV and exit.')
         self.argparser.add_argument('-c', '--columns', dest='columns',
                                     help='A comma separated list of column indices, names or ranges to sort by, e.g. "1,id,3-5". Defaults to all columns.')
+        self.argparser.add_argument('--force-names', dest='force_names', action='store_true',
+                                    help='Specify that -c arguments represent column names, e.g. "1, 3-5, 2019" will try to literally match columns named "1", "3-5" and "2019".')
         self.argparser.add_argument('-r', '--reverse', dest='reverse', action='store_true',
                                     help='Sort in descending order.')
         self.argparser.add_argument('-y', '--snifflimit', dest='sniff_limit', type=int,
@@ -39,7 +41,8 @@ class CSVSort(CSVKitUtility):
         column_ids = parse_column_identifiers(
             self.args.columns,
             table.column_names,
-            self.get_column_offset()
+            self.get_column_offset(),
+            force_names=getattr(self.args, 'force_names', False),
         )
 
         table = table.order_by(column_ids, reverse=self.args.reverse)

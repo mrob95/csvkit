@@ -16,6 +16,8 @@ class CSVJoin(CSVKitUtility):
                                     help='The CSV files to operate on. If only one is specified, it will be copied to STDOUT.')
         self.argparser.add_argument('-c', '--columns', dest='columns',
                                     help='The column name(s) on which to join. Should be either one name (or index) or a comma-separated list with one name (or index) for each file, in the same order that the files were specified. May also be left unspecified, in which case the two files will be joined sequentially without performing any matching.')
+        self.argparser.add_argument('--force-names', dest='force_names', action='store_true',
+                                    help='Specify that -c arguments represent column names, e.g. "1, 3-5, 2019" will try to literally match columns named "1", "3-5" and "2019".')
         self.argparser.add_argument('--outer', dest='outer_join', action='store_true',
                                     help='Perform a full outer join, rather than the default inner join.')
         self.argparser.add_argument('--left', dest='left_join', action='store_true',
@@ -69,7 +71,11 @@ class CSVJoin(CSVKitUtility):
 
         if self.args.columns:
             for i, table in enumerate(tables):
-                join_column_ids.append(match_column_identifier(table.column_names, join_column_names[i]))
+                join_column_ids.append(match_column_identifier(
+                    table.column_names,
+                    join_column_names[i],
+                    force_names=getattr(self.args, 'force_names', False),
+                ))
 
         jointab = tables[0]
 

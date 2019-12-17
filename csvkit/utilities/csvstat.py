@@ -72,6 +72,8 @@ class CSVStat(CSVKitUtility):
                                     help='Display column names and indices from the input CSV and exit.')
         self.argparser.add_argument('-c', '--columns', dest='columns',
                                     help='A comma separated list of column indices, names or ranges to be examined, e.g. "1,id,3-5". Defaults to all columns.')
+        self.argparser.add_argument('--force-names', dest='force_names', action='store_true',
+                                    help='Specify that -c arguments represent column names, e.g. "1, 3-5, 2019" will try to literally match columns named "1", "3-5" and "2019".')
         self.argparser.add_argument('--type', dest='type_only', action='store_true',
                                     help='Only output data type.')
         self.argparser.add_argument('--nulls', dest='nulls_only', action='store_true',
@@ -143,7 +145,8 @@ class CSVStat(CSVKitUtility):
         column_ids = parse_column_identifiers(
             self.args.columns,
             table.column_names,
-            self.get_column_offset()
+            self.get_column_offset(),
+            force_names=getattr(self.args, 'force_names', False),
         )
 
         kwargs = {}

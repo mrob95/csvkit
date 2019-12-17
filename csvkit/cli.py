@@ -353,7 +353,8 @@ class CSVKitUtility(object):
             self.args.columns,
             column_names,
             column_offset,
-            getattr(self.args, 'not_columns', None)
+            getattr(self.args, 'not_columns', None),
+            getattr(self.args, 'force_names', False),
         )
 
         return rows, column_names, column_ids
@@ -387,14 +388,17 @@ def make_default_headers(n):
     return tuple(agate.utils.letter_name(i) for i in range(n))
 
 
-def match_column_identifier(column_names, c, column_offset=1):
+def match_column_identifier(column_names, c, column_offset=1, force_names=False):
     """
     Determine what column a single column id (name or index) matches in a series of column names.
     Note that integer values are *always* treated as positional identifiers. If you happen to have
     column names which are also integers, you must specify them using a positional index.
     """
-    if isinstance(c, six.string_types) and not c.isdigit() and c in column_names:
+    if isinstance(c, six.string_types) and (not c.isdigit() or force_names) and c in column_names:
         return column_names.index(c)
+    elif force_names:
+        # Second expression in if statement must be true, so c not in column_names
+        raise ColumnIdentifierError("Column '%s' is not a column name. Column names are: %s" % (c, repr(column_names)[1:-1]))
     else:
         try:
             c = int(c) - column_offset
@@ -413,7 +417,7 @@ def match_column_identifier(column_names, c, column_offset=1):
     return c
 
 
-def parse_column_identifiers(ids, column_names, column_offset=1, excluded_columns=None):
+def parse_column_identifiers(ids, column_names, column_offset=1, excluded_columns=None, force_names=False):
     """
     Parse a comma-separated list of column indices AND/OR names into a list of integer indices.
     Ranges of integers can be specified with two integers separated by a '-' or ':' character.
@@ -431,8 +435,11 @@ def parse_column_identifiers(ids, column_names, column_offset=1, excluded_column
 
         for c in ids.split(','):
             try:
-                columns.append(match_column_identifier(column_names, c, column_offset))
+                columns.append(match_column_identifier(column_names, c, column_offset, force_names))
             except ColumnIdentifierError:
+                if force_names:
+                    raise
+
                 if ':' in c:
                     a, b = c.split(':', 1)
                 elif '-' in c:
