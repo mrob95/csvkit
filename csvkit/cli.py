@@ -470,7 +470,7 @@ def parse_column_identifiers(ids, column_names, column_offset=1, excluded_column
     if excluded_columns:
         for c in excluded_columns.split(','):
             try:
-                excludes.append(match_column_identifier(column_names, c, column_offset))
+                excludes.append(match_column_identifier(column_names, c, column_offset, force_names))
             except ColumnIdentifierError:
                 if ':' in c:
                     a, b = c.split(':', 1)

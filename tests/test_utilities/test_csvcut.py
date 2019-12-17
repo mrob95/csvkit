@@ -98,3 +98,10 @@ class TestCSVCut(CSVKitTestCase, ColumnsTests, EmptyFileTests, NamesTests):
             ['1', 'c', 'd'],
             ['2', 'y', 'z'],
         ])
+
+    def test_force_column_names_exclude(self):
+        self.assertRows(['--force-names', '-C', '2,2019,2-4', 'examples/numeric_colnames.csv'], [
+            ['5'],
+            ['b'],
+            ['x'],
+        ])
