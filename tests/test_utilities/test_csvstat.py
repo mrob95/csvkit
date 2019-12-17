@@ -109,3 +109,16 @@ class TestCSVStat(CSVKitTestCase, ColumnsTests, EmptyFileTests, NamesTests):
         self.assertEqual(row[2], 'Text')
         self.assertEqual(row[5], '')
         self.assertEqual(row[11], '16')
+
+    def test_force_column_names(self):
+        output = self.get_output_as_io(['--force-names', '--csv', '-c', '2019', 'examples/numeric_colnames.csv'])
+        reader = agate.csv.reader(output)
+
+        header = next(reader)
+        self.assertEqual(header[1], 'column_name')
+        self.assertEqual(header[4], 'unique')
+
+        row = next(reader)
+        self.assertEqual(row[1], '2019')
+        self.assertEqual(row[2], 'Text')
+        self.assertEqual(row[4], '2')

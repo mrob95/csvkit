@@ -100,3 +100,10 @@ class TestCSVSort(CSVKitTestCase, ColumnsTests, EmptyFileTests, NamesTests):
             ])
 
         input_file.close()
+
+    def test_force_column_names(self):
+        self.assertRows(['--force-names', '-r', '-c', '2019', 'examples/numeric_colnames.csv'], [
+            ['2', '5', '2019', '2-4'],
+            ['2', 'x', 'y', 'z'],
+            ['1', 'b', 'c', 'd'],
+        ])

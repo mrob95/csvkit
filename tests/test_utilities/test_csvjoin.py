@@ -89,3 +89,10 @@ class TestCSVJoin(CSVKitTestCase, EmptyFileTests):
             ['2', 'b', 'c', ''],
             ['3', 'b', 'c', ''],
         ])
+
+    def test_force_column_names(self):
+        self.assertRows(['--force-names', '-c', '2,a', 'examples/numeric_colnames.csv', 'examples/join_a.csv'], [
+            ['2', '5', '2019', '2-4', 'b', 'c'],
+            ['1', 'b', 'c', 'd', 'b', 'c'],
+            ['2', 'x', 'y', 'z', 'b', 'c'],
+        ])

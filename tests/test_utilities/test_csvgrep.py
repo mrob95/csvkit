@@ -91,3 +91,9 @@ class TestCSVGrep(CSVKitTestCase, ColumnsTests, EmptyFileTests, NamesTests):
             ['line_numbers', 'a', 'b', 'c'],
             ['1', '1', '2', '3'],
         ])
+
+    def test_force_column_names(self):
+        self.assertRows(['--force-names', '-c', '2019', '-m', 'c', 'examples/numeric_colnames.csv'], [
+            ['2', '5', '2019', '2-4'],
+            ['1', 'b', 'c', 'd'],
+        ])
